@@ -1,12 +1,16 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { SignInButton, SignUpButton, SignOutButton, UserButton } from '@clerk/nextjs'
 
 async function getUserName(): Promise<string> {
-  const { sessionClaims } = await auth()
+  const user = await currentUser()
 
-  if (sessionClaims?.firstName) return sessionClaims.firstName as string
-  if (sessionClaims?.username) return sessionClaims.username as string
-  if (sessionClaims?.email) return (sessionClaims.email as string).split('@')[0]
+  if (!user) return "User"
+
+  if (user.firstName) return user.firstName
+  if (user.username) return user.username
+  if (user.emailAddresses?.[0]?.emailAddress) {
+    return user.emailAddresses[0].emailAddress.split('@')[0]
+  }
 
   return "User"
 }
