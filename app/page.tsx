@@ -1,5 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { SignInButton, SignUpButton, SignOutButton, UserButton } from '@clerk/nextjs'
+import Link from 'next/link'
 
 async function getUserName(): Promise<string> {
   const user = await currentUser()
@@ -55,12 +56,22 @@ export default async function HomePage() {
           <h1 className="text-3xl font-bold mb-4">Home Page</h1>
 
           {userId && (
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">
-              Welcome, <span className="text-blue-600">{userName}</span> 👋
-            </h2>
-          )}
+            <>
+              <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                Welcome, <span className="text-blue-600">{userName}</span> 👋
+              </h2>
 
-          {/* Optional extra content here */}
+              <div className="mt-6">
+                {/* Link to dynamic userdetails page */}
+                <Link 
+                  href={`/userdetails/${userId}`}
+                  className="block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  View My Details
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
