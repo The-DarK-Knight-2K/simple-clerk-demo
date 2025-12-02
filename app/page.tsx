@@ -7,8 +7,8 @@ async function getUserName(): Promise<string> {
 
   if (!user) return "User"
 
-  if (user.firstName) return user.firstName
   if (user.username) return user.username
+  if (user.firstName) return user.firstName
   if (user.emailAddresses?.[0]?.emailAddress) {
     return user.emailAddresses[0].emailAddress.split('@')[0]
   }
@@ -63,7 +63,7 @@ export default async function HomePage() {
 
               <div className="mt-6">
                 {/* Link to dynamic userdetails page */}
-                <Link 
+                <Link
                   href={`/userdetails/${userId}`}
                   className="block px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 >
