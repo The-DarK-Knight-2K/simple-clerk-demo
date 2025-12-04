@@ -3,6 +3,21 @@ import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
+// Helper function to get the primary/consistent email address
+function getPrimaryEmail(emailAddresses: any[], primaryEmailId: string | null | undefined): string {
+  // Try to find the email matching the primary_email_address_id
+  const primaryEmail = emailAddresses.find(email => email.id === primaryEmailId)
+
+  // Use the found primary email, or fallback to the first one
+  const emailToUse = primaryEmail?.email_address || emailAddresses[0]?.email_address
+
+  console.log('📧 All emails from Clerk:', emailAddresses.map(e => e.email_address))
+  console.log('🆔 Primary Email ID:', primaryEmailId)
+  console.log('✅ Using email:', emailToUse)
+
+  return emailToUse
+}
+
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
 
@@ -50,21 +65,22 @@ export async function POST(req: Request) {
   const eventType = evt.type
 
   if (eventType === 'user.created') {
-    const { id, email_addresses, username, first_name, last_name, image_url } = evt.data
+    const { id, email_addresses, username, first_name, last_name, image_url, primary_email_address_id } = evt.data as any
+    const email = getPrimaryEmail(email_addresses, primary_email_address_id)
 
     try {
       await prisma.user.upsert({
         where: { clerkId: id },
         create: {
           clerkId: id,
-          email: email_addresses[0].email_address,
+          email: email,
           username: username,
           firstName: first_name,
           lastName: last_name,
           imageUrl: image_url,
         },
         update: {
-          email: email_addresses[0].email_address,
+          email: email,
           username: username,
           firstName: first_name,
           lastName: last_name,
@@ -80,21 +96,22 @@ export async function POST(req: Request) {
   }
 
   if (eventType === 'user.updated') {
-    const { id, email_addresses, username, first_name, last_name, image_url } = evt.data
+    const { id, email_addresses, username, first_name, last_name, image_url, primary_email_address_id } = evt.data as any
+    const email = getPrimaryEmail(email_addresses, primary_email_address_id)
 
     try {
       await prisma.user.upsert({
         where: { clerkId: id },
         create: {
           clerkId: id,
-          email: email_addresses[0].email_address,
+          email: email,
           username: username,
           firstName: first_name,
           lastName: last_name,
           imageUrl: image_url,
         },
         update: {
-          email: email_addresses[0].email_address,
+          email: email,
           username: username,
           firstName: first_name,
           lastName: last_name,
@@ -113,7 +130,7 @@ export async function POST(req: Request) {
     const { id } = evt.data
 
     try {
-      await prisma.user.delete({
+      await prisma.user.deleteMany({
         where: { clerkId: id },
       })
 
