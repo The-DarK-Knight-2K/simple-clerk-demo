@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { completeOnboarding } from '../actions'
+import { completeOnboarding } from '../../lib/actions'
 
 export default function OnboardingForm() {
     const [state, formAction, isPending] = useActionState(completeOnboarding, null)
