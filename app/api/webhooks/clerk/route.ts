@@ -53,9 +53,17 @@ export async function POST(req: Request) {
     const { id, email_addresses, username, first_name, last_name, image_url } = evt.data
 
     try {
-      await prisma.user.create({
-        data: {
+      await prisma.user.upsert({
+        where: { clerkId: id },
+        create: {
           clerkId: id,
+          email: email_addresses[0].email_address,
+          username: username,
+          firstName: first_name,
+          lastName: last_name,
+          imageUrl: image_url,
+        },
+        update: {
           email: email_addresses[0].email_address,
           username: username,
           firstName: first_name,
@@ -75,9 +83,17 @@ export async function POST(req: Request) {
     const { id, email_addresses, username, first_name, last_name, image_url } = evt.data
 
     try {
-      await prisma.user.update({
+      await prisma.user.upsert({
         where: { clerkId: id },
-        data: {
+        create: {
+          clerkId: id,
+          email: email_addresses[0].email_address,
+          username: username,
+          firstName: first_name,
+          lastName: last_name,
+          imageUrl: image_url,
+        },
+        update: {
           email: email_addresses[0].email_address,
           username: username,
           firstName: first_name,
